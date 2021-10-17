@@ -1,4 +1,3 @@
-//% blockNamespace="Musical Images"
 //% color="#ff00E0"
 //% icon="f001"
 namespace MusicalImages {
