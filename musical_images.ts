@@ -94,7 +94,7 @@ namespace MusicalImages {
         }
 
         /**
-         * Get the note frequency from the note num1
+         * Get the note frequency from the note num
          * @param note: The note num. 
          * @return: The note frequency.
          */
@@ -137,7 +137,7 @@ namespace MusicalImages {
     //% block="$musical set image queue to $images"
     //% musical.shadow="variables_get"
     //% musical.defl="musical"
-    //% images.shadow="lists_create_with"
+    //% images.shadow="animation_editor"
     //% weight = 90
     export function set_queue(musical: MusicalImage, images: Image[]) {
         musical.set_image_queue(images);
