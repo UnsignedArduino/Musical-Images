@@ -2,7 +2,7 @@
 //% icon="f001"
 namespace MusicalImages {
     export class MusicalImage {
-        private image_queue: Image[] = [];
+        private image_queue: Image[][] = [];
         private stop: boolean = false;
         private playing: boolean = false;
 
@@ -18,7 +18,7 @@ namespace MusicalImages {
          * @param images: An array of images to play. 
          */
 
-        set_image_queue(images: Image[]) {
+        set_image_queue(images: Image[][]) {
             this.stop = true;
             this.image_queue = images;
         }
@@ -27,7 +27,7 @@ namespace MusicalImages {
          * Get the images to play. Returns a pointer to the internal array.
          * @return: A pointer to an array of images that you can modify.
          */
-        get_image_queue(): Image[] {
+        get_image_queue(): Image[][] {
             return this.image_queue
         }
 
@@ -40,37 +40,49 @@ namespace MusicalImages {
             if (debug) {
                 game.consoleOverlay.setVisible(true);
             }
-            for (let image of this.image_queue) {
-                for (let col = 0; col < image.width; col += 2) {
-                    let freq_to_play: number[] = [];
-                    let time_to_play: number = 0;
-                    for (let row = 0; row < 88; row++) {
-                        if (image.getPixel(col, row) != 0) {
-                            let name: string = this._note_num_to_name(row);
-                            let freq: number = Math.round(this._note_num_to_freq(row));
-                            freq_to_play.push(freq);
-                            if (debug) {
-                                console.log("Note:" + col + "," + row + ">" + name + "(" + freq + "hz)");
-                            }
-                        }
-                        if (image.getPixel(col + 1, row) != 0) {
-                            let value: number = Math.pow(2, row);
-                            time_to_play += value;
-                            if (debug) {
-                                console.log("Time:" + (col + 1) + "," + row + ">+" + value);
-                            }
-                        }
+            for (let chunk = 0; chunk < this.image_queue[0].length; chunk ++) {
+                for (let col = 0; col < this.image_queue[0][0].width; col += 2) {
+                    let freq_to_play: number[][] = [];
+                    let time_to_play: number[] = [];
+                    for (let i = 0; i < this.image_queue.length; i ++) {
+                        freq_to_play.push([]);
+                        time_to_play.push(0);
                     }
-                    for (let freq of freq_to_play) {
-                        control.runInParallel(() => {
-                            music.playTone(freq, time_to_play);
-                        });
+                    for (let i = 0; i < this.image_queue.length; i ++) {
+                        let image: Image = this.image_queue[i][chunk];
+                        for (let row = 0; row < 88; row++) {
+                            if (image.getPixel(col, row) != 0) {
+                                let name: string = this._note_num_to_name(row);
+                                let freq: number = Math.round(this._note_num_to_freq(row));
+                                freq_to_play[i].push(freq);
+                                // if (debug) {
+                                //     console.log("[" + i + "]" + "Note:" + col + "," + row + ">" + name + "(" + freq + "hz)");
+                                // }
+                            }
+                            if (image.getPixel(col + 1, row) != 0) {
+                                let value: number = Math.pow(2, row);
+                                time_to_play[i] += value;
+                                // if (debug) {
+                                //     console.log("[" + i + "]" + "Time:" + (col + 1) + "," + row + ">+" + value);
+                                // }
+                            }
+                        }
+                        for (let freqs of freq_to_play) {
+                            for (let freq of freqs) {
+                                console.log("[" + i + "]" + "playTone(" + freq + "," + time_to_play[i] + ")");
+                                ((frequency: number, duration: number) => {
+                                    control.runInParallel(() => {
+                                        music.playTone(frequency, duration);
+                                    });
+                                })(freq, time_to_play[i]);
+                            }
+                        }
                     }
                     if (debug) {
-                        console.log("Playing for " + time_to_play + "ms");
+                        // console.log("[" + i + "]" + "Playing for " + time_to_play[i] + "ms");
                         console.log("-------------------------");
                     }
-                    pause(time_to_play);
+                    pause(time_to_play[0]);
                     if (this.stop) {
                         this.playing = false;
                         return;
@@ -137,9 +149,9 @@ namespace MusicalImages {
     //% block="$musical set image queue to $images"
     //% musical.shadow="variables_get"
     //% musical.defl="musical"
-    //% images.shadow="animation_editor"
+    //% images.shadow="lists_create_with"
     //% weight = 90
-    export function set_queue(musical: MusicalImage, images: Image[]) {
+    export function set_queue(musical: MusicalImage, images: Image[][]) {
         musical.set_image_queue(images);
     }
 
@@ -152,7 +164,7 @@ namespace MusicalImages {
     //% musical.shadow="variables_get"
     //% musical.defl="musical"
     //% weight=80
-    export function get_queue(musical: MusicalImage): Image[] {
+    export function get_queue(musical: MusicalImage): Image[][] {
         return musical.get_image_queue();
     }
 
@@ -165,7 +177,7 @@ namespace MusicalImages {
     //% musical.defl="musical"
     //% weight=70
     export function play(musical: MusicalImage) {
-        musical.play(false);
+        musical.play(true);
     }
 
     /**
