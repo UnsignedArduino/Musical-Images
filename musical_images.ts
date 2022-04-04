@@ -5,6 +5,7 @@ namespace MusicalImages {
         private image_queue: Image[][] = [];
         private stop: boolean = false;
         private playing: boolean = false;
+        private paused: boolean = false;
 
         constructor() {
             ;
@@ -37,6 +38,7 @@ namespace MusicalImages {
         play(debug: boolean) {
             this.stop = false;
             this.playing = true;
+            this.paused = false;
             if (debug) {
                 game.consoleOverlay.setVisible(true);
             }
@@ -96,6 +98,9 @@ namespace MusicalImages {
                     }
                     pause(smallest_time);
                     music.stopAllSounds();
+                    while ((!this.stop) && (!this.paused)) {
+                        pause(0);
+                    }
                     if (this.stop) {
                         this.playing = false;
                         return;
@@ -140,6 +145,27 @@ namespace MusicalImages {
          */
         is_playing(): boolean {
             return this.playing;
+        }
+
+        /**
+         * Pauses. Does nothing if not playing.
+         */
+        pause_playing() {
+            this.paused = true;
+        }
+
+        /**
+         * Resumes. Does nothing if not playing.
+         */
+        resume_playing() {
+            this.paused = false;
+        }
+
+        /**
+         * Get whether we are paused or not.
+         */
+        is_paused(): boolean {
+            return this.paused;
         }
     }
 
@@ -215,5 +241,41 @@ namespace MusicalImages {
     //% weight=50
     export function is_playing(musical: MusicalImage): boolean {
         return musical.is_playing();
+    }
+
+    /**
+     * Pause the playing the MusicalImage. Does nothing if not playing. 
+     * @param musical: The MusicalImage object to use.
+     */
+    //% block="$musical pause"
+    //% musical.shadow="variables_get"
+    //% musical.defl="musical"
+    //% weight=40
+    export function pause_playing(musical: MusicalImage) {
+        musical.pause_playing();
+    }
+
+    /**
+     * Resume the playing the MusicalImage. Does nothing if not playing. 
+     * @param musical: The MusicalImage object to use.
+     */
+    //% block="$musical resume"
+    //% musical.shadow="variables_get"
+    //% musical.defl="musical"
+    //% weight=30
+    export function resume_playing(musical: MusicalImage) {
+        musical.resume_playing();
+    }
+
+    /**
+     * Get whether the MusicalImage is paused or not. 
+     * @param musical: The MusicalImage object to use.
+     */
+    //% block="$musical is paused"
+    //% musical.shadow="variables_get"
+    //% musical.defl="musical"
+    //% weight=20
+    export function is_paused(musical: MusicalImage): boolean {
+        return musical.is_paused();
     }
 }
