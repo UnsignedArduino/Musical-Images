@@ -71,7 +71,9 @@ namespace MusicalImages {
                         for (let freqs of freq_to_play) {
                             for (let freq of freqs) {
                                 if (freqs_playing.indexOf(freq) == -1) {
-                                    console.log("[" + i + "]" + "playTone(" + freq + "," + time_to_play[i] + ")");
+                                    if (debug) {
+                                        console.log("[" + i + "]" + "playTone(" + freq + "," + time_to_play[i] + ")");
+                                    }
                                     ((frequency: number, duration: number) => {
                                         control.runInParallel(() => {
                                             music.playTone(frequency, duration);
