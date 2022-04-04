@@ -169,113 +169,110 @@ namespace MusicalImages {
         }
     }
 
+    let _mi: MusicalImage = undefined;
+
     /**
-     * Create a MusicalImage.
+     * Initialize MusicalImage.
      */
-    //% block="create musical image"
-    //% blockSetVariable="musical"
+    //% block="initialize musical image"
     //$ weight=100
-    export function create_musical_image(): MusicalImage {
-        return new MusicalImage();
+    export function init_musical_image() {
+        if (_mi == undefined) {
+            _mi = new MusicalImage();
+        }
     }
 
     /**
      * Set the image queue of the MusicalImage.
      * Note this will stop any song if any is playing. 
-     * @param musical: The MusicalImage object to use.
      * @param images: An array of Image. 
      */
-    //% block="$musical set image queue to $images"
-    //% musical.shadow="variables_get"
-    //% musical.defl="musical"
+    //% block="set image queue to $images"
     //% images.shadow="lists_create_with"
     //% weight = 90
-    export function set_queue(musical: MusicalImage, images: Image[][]) {
-        musical.set_image_queue(images);
+    export function set_queue(images: Image[][]) {
+        if (_mi == undefined) {
+            init_musical_image();
+        }
+        _mi.set_image_queue(images);
     }
 
     /**
     * Get the image queue of the MusicalImage.
-    * @param musical: The MusicalImage object to use.
     * @return: A pointer to an array of Image. 
     */
-    //% block="$musical get image queue"
-    //% musical.shadow="variables_get"
-    //% musical.defl="musical"
+    //% block="get image queue"
     //% weight=80
-    export function get_queue(musical: MusicalImage): Image[][] {
-        return musical.get_image_queue();
+    export function get_queue(): Image[][] {
+        if (_mi == undefined) {
+            init_musical_image();
+        }
+        return _mi.get_image_queue();
     }
 
     /**
      * Start playing the MusicalImage.
-     * @param musical: The MusicalImage object to use.
      */
-    //% block="$musical play"
-    //% musical.shadow="variables_get"
-    //% musical.defl="musical"
+    //% block="play"
     //% weight=70
-    export function play(musical: MusicalImage) {
-        musical.play(false);
+    export function play() {
+        if (_mi == undefined) {
+            init_musical_image();
+        }
+        _mi.play(false);
     }
 
     /**
      * Stop playing the MusicalImage. Does nothing if not playing. 
-     * @param musical: The MusicalImage object to use.
      */
-    //% block="$musical stop"
-    //% musical.shadow="variables_get"
-    //% musical.defl="musical"
+    //% block="stop"
     //% weight=60
-    export function stop(musical: MusicalImage) {
-        musical.stop_playing();
+    export function stop() {
+        if (_mi == undefined) {
+            init_musical_image();
+        }
+        _mi.stop_playing();
     }
 
     /**
      * Get whether we are playing the MusicalImage or not. 
-     * @param musical: The MusicalImage object to use.
      */
-    //% block="$musical is playing"
-    //% musical.shadow="variables_get"
-    //% musical.defl="musical"
+    //% block="is playing"
     //% weight=50
-    export function is_playing(musical: MusicalImage): boolean {
-        return musical.is_playing();
+    export function is_playing(): boolean {
+        if (_mi == undefined) {
+            init_musical_image();
+        }
+        return _mi.is_playing();
     }
 
     /**
      * Pause the playing the MusicalImage. Does nothing if not playing. 
-     * @param musical: The MusicalImage object to use.
      */
-    //% block="$musical pause"
-    //% musical.shadow="variables_get"
-    //% musical.defl="musical"
+    //% block="pause"
     //% weight=40
-    export function pause_playing(musical: MusicalImage) {
-        musical.pause_playing();
+    export function pause_playing() {
+        if (_mi == undefined) {
+            init_musical_image();
+        }
+        _mi.pause_playing();
     }
 
     /**
      * Resume the playing the MusicalImage. Does nothing if not playing. 
-     * @param musical: The MusicalImage object to use.
      */
-    //% block="$musical resume"
-    //% musical.shadow="variables_get"
-    //% musical.defl="musical"
+    //% block="resume"
     //% weight=30
-    export function resume_playing(musical: MusicalImage) {
-        musical.resume_playing();
+    export function resume_playing() {
+        _mi.resume_playing();
     }
 
     /**
      * Get whether the MusicalImage is paused or not. 
-     * @param musical: The MusicalImage object to use.
      */
-    //% block="$musical is paused"
-    //% musical.shadow="variables_get"
-    //% musical.defl="musical"
+    //% block="is paused"
     //% weight=20
-    export function is_paused(musical: MusicalImage): boolean {
-        return musical.is_paused();
+    export function is_paused(): boolean {
+        return _mi.is_paused();
     }
 }
