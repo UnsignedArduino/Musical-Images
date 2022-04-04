@@ -48,6 +48,7 @@ namespace MusicalImages {
                         freq_to_play.push([]);
                         time_to_play.push(0);
                     }
+                    let freqs_playing: number[] = [];
                     for (let i = 0; i < this.image_queue.length; i ++) {
                         let image: Image = this.image_queue[i][chunk];
                         for (let row = 0; row < 88; row++) {
@@ -69,12 +70,15 @@ namespace MusicalImages {
                         }
                         for (let freqs of freq_to_play) {
                             for (let freq of freqs) {
-                                console.log("[" + i + "]" + "playTone(" + freq + "," + time_to_play[i] + ")");
-                                ((frequency: number, duration: number) => {
-                                    control.runInParallel(() => {
-                                        music.playTone(frequency, duration);
-                                    });
-                                })(freq, time_to_play[i]);
+                                if (freqs_playing.indexOf(freq) == -1) {
+                                    console.log("[" + i + "]" + "playTone(" + freq + "," + time_to_play[i] + ")");
+                                    ((frequency: number, duration: number) => {
+                                        control.runInParallel(() => {
+                                            music.playTone(frequency, duration);
+                                        });
+                                    })(freq, time_to_play[i]);
+                                    freqs_playing.push(freq);
+                                }
                             }
                         }
                     }
@@ -82,7 +86,14 @@ namespace MusicalImages {
                         // console.log("[" + i + "]" + "Playing for " + time_to_play[i] + "ms");
                         console.log("-------------------------");
                     }
-                    pause(time_to_play[0]);
+                    let smallest_time: number = undefined;
+                    for (let time of time_to_play) {
+                        if (smallest_time == undefined || time < smallest_time) {
+                            smallest_time = time;
+                        }
+                    }
+                    pause(smallest_time);
+                    music.stopAllSounds();
                     if (this.stop) {
                         this.playing = false;
                         return;
