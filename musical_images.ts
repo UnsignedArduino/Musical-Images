@@ -188,7 +188,7 @@ namespace MusicalImages {
     //% musical.defl="musical"
     //% weight=70
     export function play(musical: MusicalImage) {
-        musical.play(true);
+        musical.play(false);
     }
 
     /**
