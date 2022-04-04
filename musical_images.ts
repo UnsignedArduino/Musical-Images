@@ -174,7 +174,7 @@ namespace MusicalImages {
     /**
      * Initialize MusicalImage.
      */
-    //% block="initialize musical image"
+    //% block="musical image initialize"
     //$ weight=100
     export function init_musical_image() {
         if (_mi == undefined) {
@@ -187,7 +187,7 @@ namespace MusicalImages {
      * Note this will stop any song if any is playing. 
      * @param images: An array of Image. 
      */
-    //% block="set image queue to $images"
+    //% block="musical image set image queue to $images"
     //% images.shadow="lists_create_with"
     //% weight = 90
     export function set_queue(images: Image[][]) {
@@ -201,7 +201,7 @@ namespace MusicalImages {
     * Get the image queue of the MusicalImage.
     * @return: A pointer to an array of Image. 
     */
-    //% block="get image queue"
+    //% block="musical image get image queue"
     //% weight=80
     export function get_queue(): Image[][] {
         if (_mi == undefined) {
@@ -213,7 +213,7 @@ namespace MusicalImages {
     /**
      * Start playing the MusicalImage.
      */
-    //% block="play"
+    //% block="musical image play"
     //% weight=70
     export function play() {
         if (_mi == undefined) {
@@ -225,7 +225,7 @@ namespace MusicalImages {
     /**
      * Stop playing the MusicalImage. Does nothing if not playing. 
      */
-    //% block="stop"
+    //% block="musical image stop"
     //% weight=60
     export function stop() {
         if (_mi == undefined) {
@@ -237,7 +237,7 @@ namespace MusicalImages {
     /**
      * Get whether we are playing the MusicalImage or not. 
      */
-    //% block="is playing"
+    //% block="musical image is playing"
     //% weight=50
     export function is_playing(): boolean {
         if (_mi == undefined) {
@@ -249,7 +249,7 @@ namespace MusicalImages {
     /**
      * Pause the playing the MusicalImage. Does nothing if not playing. 
      */
-    //% block="pause"
+    //% block="musical image pause"
     //% weight=40
     export function pause_playing() {
         if (_mi == undefined) {
@@ -261,7 +261,7 @@ namespace MusicalImages {
     /**
      * Resume the playing the MusicalImage. Does nothing if not playing. 
      */
-    //% block="resume"
+    //% block="musical image resume"
     //% weight=30
     export function resume_playing() {
         _mi.resume_playing();
@@ -270,7 +270,7 @@ namespace MusicalImages {
     /**
      * Get whether the MusicalImage is paused or not. 
      */
-    //% block="is paused"
+    //% block="musical image is paused"
     //% weight=20
     export function is_paused(): boolean {
         return _mi.is_paused();
