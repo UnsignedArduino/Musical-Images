@@ -143,7 +143,6 @@ namespace MusicalImages {
                         }
                     }
                     pause(smallest_time);
-                    music.stopAllSounds();
                     while ((!this.stop) && this.paused) {
                         pause(0);
                     }
