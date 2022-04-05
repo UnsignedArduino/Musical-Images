@@ -35,7 +35,8 @@ namespace MusicalImages {
         /**
          * Play the musical images.
          */
-        play(debug: boolean) {
+        play() {
+            const debug: boolean = false;
             this.stop = false;
             this.playing = true;
             this.paused = false;
@@ -46,11 +47,18 @@ namespace MusicalImages {
                 for (let col = 0; col < this.image_queue[0][0].width; col += 2) {
                     let freq_to_play: number[][] = [];
                     let time_to_play: number[] = [];
+                    let note_to_play: number[][] = [];
+                    let channel_to_play: number[][] = [];
                     for (let i = 0; i < this.image_queue.length; i ++) {
                         freq_to_play.push([]);
                         time_to_play.push(0);
+                        note_to_play.push([]);
+                        channel_to_play.push([]);
                     }
                     let freqs_playing: number[] = [];
+                    let times_playing: number[] = [];
+                    let note_playing: number[] = [];
+                    let channel_playing: number[] = [];
                     for (let i = 0; i < this.image_queue.length; i ++) {
                         let image: Image = this.image_queue[i][chunk];
                         for (let row = 0; row < 88; row++) {
@@ -58,6 +66,8 @@ namespace MusicalImages {
                                 let name: string = this._note_num_to_name(row);
                                 let freq: number = Math.round(this._note_num_to_freq(row));
                                 freq_to_play[i].push(freq);
+                                note_to_play[i].push(row);
+                                channel_to_play[i].push(i);
                                 // if (debug) {
                                 //     console.log("[" + i + "]" + "Note:" + col + "," + row + ">" + name + "(" + freq + "hz)");
                                 // }
@@ -70,21 +80,38 @@ namespace MusicalImages {
                                 // }
                             }
                         }
-                        for (let freqs of freq_to_play) {
-                            for (let freq of freqs) {
+                        for (let chan_i = 0; chan_i < freq_to_play.length; chan_i ++) {
+                            let freq_channel: number[] = freq_to_play[chan_i];
+                            let note_channel: number[] = note_to_play[i];
+                            let channel_channel: number[] = channel_to_play[i];
+                            // console.log("Channels: ");
+                            // console.log(channel_channel);
+                            for (let note_i = 0; note_i < freq_channel.length; note_i ++) {
+                                let freq: number = freq_channel[note_i];
+                                let note: number = note_channel[note_i];
+                                let channel: number = channel_channel[0];
                                 if (freqs_playing.indexOf(freq) == -1) {
-                                    if (debug) {
-                                        console.log("[" + i + "]" + "playTone(" + freq + "," + time_to_play[i] + ")");
-                                    }
-                                    ((frequency: number, duration: number) => {
-                                        control.runInParallel(() => {
-                                            music.playTone(frequency, duration);
-                                        });
-                                    })(freq, time_to_play[i]);
                                     freqs_playing.push(freq);
+                                    times_playing.push(time_to_play[i]);
+                                    note_playing.push(note);
+                                    channel_playing.push(channel);
                                 }
                             }
                         }
+                    }
+                    for (let i = 0; i < freqs_playing.length; i ++) {
+                        let freq: number = freqs_playing[i];
+                        let dur: number = times_playing[i];
+                        let note: number = note_playing[i];
+                        let channel: number = channel_playing[i];
+                        if (debug) {
+                            console.log("playTone(" + freq + "," + dur + ")//" + channel + ":" + note);
+                        }
+                        ((frequency: number, duration: number) => {
+                            control.runInParallel(() => {
+                                music.playTone(frequency, duration);
+                            });
+                        })(freq, dur);
                     }
                     if (debug) {
                         // console.log("[" + i + "]" + "Playing for " + time_to_play[i] + "ms");
@@ -219,7 +246,7 @@ namespace MusicalImages {
         if (_mi == undefined) {
             init_musical_image();
         }
-        _mi.play(false);
+        _mi.play();
     }
 
     /**
