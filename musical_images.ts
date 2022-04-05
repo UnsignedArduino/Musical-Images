@@ -3,9 +3,10 @@
 namespace MusicalImages {
     export class MusicalImage {
         private image_queue: Image[][] = [];
-        private stop: boolean = false;
+        private stop_signal: boolean = false;
         private playing: boolean = false;
         private paused: boolean = false;
+        private pause_signal: boolean = false;
         private handler: (channels: number[], notes: number[], frequencys: number[], durations: number[]) => void = undefined;
 
         constructor() {
@@ -21,7 +22,7 @@ namespace MusicalImages {
          */
 
         set_image_queue(images: Image[][]) {
-            this.stop = true;
+            this.stop_signal = true;
             this.image_queue = images;
         }
 
@@ -48,9 +49,10 @@ namespace MusicalImages {
          */
         play() {
             const debug: boolean = false;
-            this.stop = false;
+            this.stop_signal = false;
             this.playing = true;
             this.paused = false;
+            this.pause_signal = false;
             if (debug) {
                 game.consoleOverlay.setVisible(true);
             }
@@ -143,10 +145,14 @@ namespace MusicalImages {
                         }
                     }
                     pause(smallest_time);
-                    while ((!this.stop) && this.paused) {
-                        pause(0);
+                    if (this.pause_signal) {
+                        this.paused = true;
+                        while (this.pause_signal && !this.stop_signal) {
+                            pause(0);
+                        }
+                        this.paused = false;
                     }
-                    if (this.stop) {
+                    if (this.stop_signal) {
                         this.playing = false;
                         return;
                     }
@@ -182,7 +188,7 @@ namespace MusicalImages {
          * Stop playing. Does nothing if not playing.
          */
         stop_playing() {
-            this.stop = true;
+            this.stop_signal = true;
         }
 
         /**
@@ -196,14 +202,14 @@ namespace MusicalImages {
          * Pauses. Does nothing if not playing.
          */
         pause_playing() {
-            this.paused = true;
+            this.pause_signal = true;
         }
 
         /**
          * Resumes. Does nothing if not playing.
          */
         resume_playing() {
-            this.paused = false;
+            this.pause_signal = false;
         }
 
         /**
