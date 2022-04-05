@@ -6,6 +6,7 @@ namespace MusicalImages {
         private stop: boolean = false;
         private playing: boolean = false;
         private paused: boolean = false;
+        private handler: (channels: number[], notes: number[], frequencys: number[], durations: number[]) => void = undefined;
 
         constructor() {
             ;
@@ -30,6 +31,16 @@ namespace MusicalImages {
          */
         get_image_queue(): Image[][] {
             return this.image_queue
+        }
+
+        /**
+         * Set the handler when we play. 
+         * @param handler: A function that will accept 4 arrays of numbers. 
+         */
+        set_handler(hdlr: (channels: number[], notes: number[], frequencys: number[], durations: number[]) => void) {
+            if (hdlr != undefined) {
+                this.handler = hdlr;
+            }
         }
 
         /**
@@ -99,19 +110,27 @@ namespace MusicalImages {
                             }
                         }
                     }
-                    for (let i = 0; i < freqs_playing.length; i ++) {
-                        let freq: number = freqs_playing[i];
-                        let dur: number = times_playing[i];
-                        let note: number = note_playing[i];
-                        let channel: number = channel_playing[i];
-                        if (debug) {
-                            console.log("playTone(" + freq + "," + dur + ")//" + channel + ":" + note);
+                    if (this.handler == undefined) {
+                        for (let i = 0; i < freqs_playing.length; i++) {
+                            let freq: number = freqs_playing[i];
+                            let dur: number = times_playing[i];
+                            let note: number = note_playing[i];
+                            let channel: number = channel_playing[i];
+                            if (debug) {
+                                console.log("playTone(" + freq + "," + dur + ")//" + channel + ":" + note);
+                            }
+                            ((frequency: number, duration: number) => {
+                                control.runInParallel(() => {
+                                    music.playTone(frequency, duration);
+                                });
+                            })(freq, dur);
                         }
-                        ((frequency: number, duration: number) => {
+                    } else {
+                        ((c: number[], n: number[], f: number[], d: number[]) => {
                             control.runInParallel(() => {
-                                music.playTone(frequency, duration);
-                            });
-                        })(freq, dur);
+                                this.handler(c, n, f, d);
+                            })
+                        })(channel_playing, note_playing, freqs_playing, times_playing);
                     }
                     if (debug) {
                         // console.log("[" + i + "]" + "Playing for " + time_to_play[i] + "ms");
@@ -301,5 +320,19 @@ namespace MusicalImages {
     //% weight=20
     export function is_paused(): boolean {
         return _mi.is_paused();
+    }
+
+    /**
+     * Set the handler when playing notes.
+     * @param hdlr: A function that accepts 4 arrays of numbers.
+     */
+    //% block="musical image set notes handler channels $channels notes $notes frequencys $frequencys durations $durations"
+    //% draggableParameters="reporter"
+    //% weight=10
+    export function set_handler(h: (channels: number[], notes: number[], frequencys: number[], durations: number[]) => void) {
+        if (_mi == undefined) {
+            init_musical_image();
+        }
+        _mi.set_handler(h);
     }
 }
